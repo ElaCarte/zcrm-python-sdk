@@ -740,6 +740,7 @@ class RelatedListAPIHandler(APIHandler):
             except ImportError:
                 from Utility import CommonUtil
             CommonUtil.raise_exception(handler_ins.request_url_path,ex.message,traceback.format_stack())
+
     def upload_link_as_attachment(self,link_url):
         try:
             handler_ins=APIHandler()
@@ -1076,13 +1077,13 @@ class MassEntityAPIHandler(APIHandler):
                 from Utility import CommonUtil
             CommonUtil.raise_exception(handler_ins.request_url_path,ex.message,traceback.format_stack())
         
-    def search_records(self,search_word,page,per_page,type):
+    def search_records(self,search_word,page,per_page):
         try:
             handler_ins=APIHandler()
             handler_ins.request_url_path=self.module_instance.api_name+"/search"
             handler_ins.request_method=APIConstants.REQUEST_METHOD_GET
             handler_ins.request_api_key=APIConstants.DATA
-            handler_ins.add_param(type, search_word)
+            handler_ins.add_param("word", search_word)
             handler_ins.add_param("page", page)
             handler_ins.add_param("per_page", per_page)
             bulk_api_response=APIRequest(handler_ins).get_bulk_api_response()
@@ -1672,30 +1673,29 @@ class MetaDataAPIHandler(APIHandler):
             except ImportError:
                 from Utility import CommonUtil
             CommonUtil.raise_exception(handler_ins.request_url_path,ex.message,traceback.format_stack())
-        
-        
+
     def get_zcrmmodule(self,module_details):
         try:
             from .Operations import ZCRMModule
         except ImportError:
             from Operations import ZCRMModule
-        crmmodule_instance=ZCRMModule.get_instance(module_details[APIConstants.API_NAME])
-        crmmodule_instance.is_viewable=bool(module_details['viewable'])
-        crmmodule_instance.is_creatable=bool(module_details['creatable'])
-        crmmodule_instance.is_convertable=bool(module_details['convertable'])
-        crmmodule_instance.is_editable=bool(module_details['editable'])
-        crmmodule_instance.is_deletable=bool(module_details['deletable'])
-        crmmodule_instance.web_link=module_details['web_link'] if 'web_link' in module_details else None
-        crmmodule_instance.singular_label=module_details['singular_label']
-        crmmodule_instance.plural_label=module_details['plural_label']
-        crmmodule_instance.id=module_details['id']
-        crmmodule_instance.modified_time=module_details['modified_time']
-        crmmodule_instance.is_api_supported=bool(module_details['api_supported'])
-        crmmodule_instance.is_scoring_supported=bool(module_details['scoring_supported'])
-        crmmodule_instance.module_name=module_details['module_name']
-        crmmodule_instance.business_card_field_limit=int(module_details['business_card_field_limit']) if 'business_card_field_limit' in module_details else None
-        crmmodule_instance.sequence_number=module_details['sequence_number'] if 'sequence_number' in module_details else None
-        crmmodule_instance.is_global_search_supported=bool(module_details['global_search_supported']) if 'global_search_supported' in module_details else None
+        crmmodule_instance = ZCRMModule.get_instance(module_details[APIConstants.API_NAME])
+        crmmodule_instance.is_viewable = bool(module_details.get('viewable'))
+        crmmodule_instance.is_creatable = bool(module_details.get('creatable'))
+        crmmodule_instance.is_convertable = bool(module_details.get('convertable'))
+        crmmodule_instance.is_editable = bool(module_details.get('editable'))
+        crmmodule_instance.is_deletable = bool(module_details.get('deletable'))
+        crmmodule_instance.web_link = module_details.get('web_link')
+        crmmodule_instance.singular_label = module_details.get('singular_label')
+        crmmodule_instance.plural_label = module_details.get('plural_label')
+        crmmodule_instance.id = module_details.get('id')
+        crmmodule_instance.modified_time = module_details.get('modified_time')
+        crmmodule_instance.is_api_supported = bool(module_details.get('api_supported'))
+        crmmodule_instance.is_scoring_supported = bool(module_details.get('scoring_supported'))
+        crmmodule_instance.module_name = module_details.get('module_name')
+        crmmodule_instance.business_card_field_limit = int(module_details.get('business_card_field_limit'))
+        crmmodule_instance.sequence_number = module_details.get('sequence_number')
+        crmmodule_instance.is_global_search_supported = bool(module_details.get('global_search_supported'))
         try:
             from .Operations import ZCRMUser,ZCRMProfile,ZCRMModuleRelatedList
         except ImportError:
@@ -1851,6 +1851,7 @@ class OrganizationAPIHandler(APIHandler):
             raise ex
         except Exception as ex:
             CommonUtil.raise_exception(handler_ins.request_url_path,ex.message,traceback.format_stack())
+
     def get_profile(self,profile_id):
         try:
             try:
@@ -1871,6 +1872,7 @@ class OrganizationAPIHandler(APIHandler):
             raise ex
         except Exception as ex:
             CommonUtil.raise_exception(handler_ins.request_url_path,ex.message,traceback.format_stack())
+
     def create_user(self,user_instance):
         try:
             try:
@@ -2150,54 +2152,53 @@ class OrganizationAPIHandler(APIHandler):
         except ImportError:
             from Operations import ZCRMUser,ZCRMRole,ZCRMProfile
         user_instance=ZCRMUser.get_instance(user_details['id'],user_details['name'] if 'name' in user_details else None)
-        user_instance.country=user_details['country'] if 'country' in user_details else None
         user_instance.role=ZCRMRole.get_instance(user_details['role']['id'],user_details['role']['name'])
+        user_instance.profile=ZCRMProfile.get_instance(user_details['profile']['id'],user_details['profile']['name'])
         if 'customize_info' in user_details:
             user_instance.customize_info=self.get_zcrm_user_customizeinfo(user_details['customize_info'])
-        user_instance.city=user_details['city']
-        user_instance.signature=user_details['signature'] if 'signature' in user_details else None
-        user_instance.name_format=user_details['name_format'] if 'name_format' in user_details else None
-        user_instance.language=user_details['language']
-        user_instance.locale=user_details['locale']
-        user_instance.is_personal_account=bool(user_details['personal_account']) if 'personal_account' in user_details else None
-        user_instance.default_tab_group=user_details['default_tab_group'] if 'default_tab_group' in user_details else None
-        user_instance.alias=user_details['alias']
-        user_instance.street=user_details['street']
-        user_instance.city=user_details['city']
         if 'theme' in user_details:
             user_instance.theme=self.get_zcrm_user_theme(user_details['theme'])
-        user_instance.state=user_details['state']
-        user_instance.country_locale=user_details['country_locale']
-        user_instance.fax=user_details['fax']
-        user_instance.first_name=user_details['first_name']
-        user_instance.email=user_details['email']
-        user_instance.zip=user_details['zip']
-        user_instance.decimal_separator=user_details['decimal_separator'] if 'decimal_separator' in user_details else None
-        user_instance.website=user_details['website']
-        user_instance.time_format=user_details['time_format']
-        user_instance.profile=ZCRMProfile.get_instance(user_details['profile']['id'],user_details['profile']['name'])
-        user_instance.mobile=user_details['mobile']
-        user_instance.last_name=user_details['last_name']
-        user_instance.time_zone=user_details['time_zone']
-        user_instance.zuid=user_details['zuid']
-        user_instance.is_confirm=bool(user_details['confirm'])
-        user_instance.full_name=user_details['full_name']
-        user_instance.phone=user_details['phone']
-        user_instance.dob=user_details['dob']
-        user_instance.date_format=user_details['date_format']
-        user_instance.status=user_details['status']
-        if 'territories' in user_details:
-            user_instance.territories=user_details['territories']
-        if 'reporting_to' in user_details:
-            user_instance.reporting_to=user_details['reporting_to']
-        if 'Currency' in user_details:
-            user_instance.currency=user_details['Currency']
-        user_instance.created_by=user_details['created_by']
-        user_instance.modified_by=user_details['Modified_By']
-        if 'Isonline' in user_details:
-            user_instance.is_online=user_details['Isonline']
-        user_instance.created_time=user_details['created_time']
-        user_instance.modified_time=user_details['Modified_Time']
+
+        user_instance.is_personal_account=bool(user_details.get('personal_account', False)) if 'personal_account' in user_details else None
+        user_instance.is_confirm=bool(user_details.get('confirm', False))
+
+        user_instance.country=user_details.get('country')
+        user_instance.city=user_details.get('city')
+        user_instance.signature=user_details.get('signature')
+        user_instance.name_format=user_details.get('name_format')
+        user_instance.language=user_details.get('language')
+        user_instance.locale=user_details.get('locale')
+        user_instance.default_tab_group=user_details.get('default_tab_group')
+        user_instance.alias=user_details.get('alias')
+        user_instance.street=user_details.get('street')
+        user_instance.city=user_details.get('city')
+        user_instance.state=user_details.get('state')
+        user_instance.country_locale=user_details.get('country_locale')
+        user_instance.fax=user_details.get('fax')
+        user_instance.first_name=user_details.get('first_name')
+        user_instance.email=user_details.get('email')
+        user_instance.zip=user_details.get('zip')
+        user_instance.decimal_separator=user_details.get('decimal_separator')
+        user_instance.website=user_details.get('website')
+        user_instance.time_format=user_details.get('time_format')
+        user_instance.mobile=user_details.get('mobile')
+        user_instance.last_name=user_details.get('last_name')
+        user_instance.time_zone=user_details.get('time_zone')
+        user_instance.zuid=user_details.get('zuid')
+        user_instance.full_name=user_details.get('full_name')
+        user_instance.phone=user_details.get('phone')
+        user_instance.dob=user_details.get('dob')
+        user_instance.date_format=user_details.get('date_format')
+        user_instance.status=user_details.get('status')
+        user_instance.territories=user_details.get('territories')
+        user_instance.reporting_to=user_details.get('reporting_to')
+        user_instance.currency=user_details.get('Currency')
+        user_instance.created_by=user_details.get('created_by')
+        user_instance.modified_by=user_details.get('Modified_By')
+        user_instance.is_online=user_details.get('Isonline')
+        user_instance.created_time=user_details.get('created_time')
+        user_instance.modified_time=user_details.get('Modified_Time')
+
         try:
             for userkey in user_details:
                 if userkey not in ZCRMUser.defaultKeys:
