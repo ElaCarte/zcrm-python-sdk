@@ -1708,9 +1708,9 @@ class MetaDataAPIHandler(APIHandler):
         if 'business_card_fields' in module_details:
             crmmodule_instance.business_card_fields=module_details['business_card_fields']
         
-        profiles=module_details['profiles']
+        profiles=module_details.get('profiles')
         for profile in profiles:
-            crmmodule_instance.profiles.append(ZCRMProfile.get_instance(profile['id'],profile['name']))
+            crmmodule_instance.profiles.append(ZCRMProfile.get_instance(profile.get('id'),profile.get('name')))
         
         if 'display_field' in module_details and module_details['display_field'] is not None:
             crmmodule_instance.display_field_name=module_details['display_field']
