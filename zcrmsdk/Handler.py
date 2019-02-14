@@ -808,18 +808,23 @@ class MassEntityAPIHandler(APIHandler):
     @staticmethod
     def get_instance(module_instance):
         return MassEntityAPIHandler(module_instance)
-    def get_records(self,cvid,sort_by,sort_order,page,per_page):
+
+    def get_records(self, cvid, sort_by, sort_order, page, per_page, if_modified_since):
         try:
-            handler_ins=APIHandler()
-            handler_ins.request_url_path=self.module_instance.api_name
-            handler_ins.request_method=APIConstants.REQUEST_METHOD_GET
-            handler_ins.request_api_key=APIConstants.DATA
+            handler_ins = APIHandler()
+            handler_ins.request_url_path = self.module_instance.api_name
+            handler_ins.request_method = APIConstants.REQUEST_METHOD_GET
+            handler_ins.request_api_key = APIConstants.DATA
+
             if cvid is not None:
                 handler_ins.add_param("cvid", cvid)
             if sort_by is not None:
                 handler_ins.add_param("sort_by", sort_by)
             if sort_order is not None:
                 handler_ins.add_param("sort_order", sort_order)
+            if if_modified_since is not None:
+                handler_ins.add_header("If-Modified-Since", if_modified_since)  # Must be in ISO 8601 format
+
             handler_ins.add_param("page", page)
             handler_ins.add_param("per_page", per_page)
             bulk_api_response=APIRequest(handler_ins).get_bulk_api_response()
