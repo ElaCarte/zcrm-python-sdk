@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='zcrmsdk-plus',
+    name='zcrmsdk',
     version='1.0.8',
 
     description='Zoho CRM SDK for Python developers',
