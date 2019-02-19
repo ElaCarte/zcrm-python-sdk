@@ -58,7 +58,8 @@ class ZCRMModule(object):
         record=ZCRMRecord.get_instance(self.api_name, entityID)
         return EntityAPIHandler.get_instance(record).get_record()
 
-    def get_records(self,cvid=None,sort_by=None,sort_order=None,page=0,per_page=200, if_modified_since=None):
+    def get_records(self, cvid=None, sort_by=None, sort_order=None, page=0, per_page=200, if_modified_since=None,
+                    fields=None):
         try:
             from .Handler import MassEntityAPIHandler
         except ImportError:
@@ -68,7 +69,9 @@ class ZCRMModule(object):
                                                                    sort_order,
                                                                    page,
                                                                    per_page,
-                                                                   if_modified_since)
+                                                                   if_modified_since,
+                                                                   fields
+                                                                   )
 
     def create_records(self,record_ins_list):
         try:
